@@ -24,10 +24,15 @@ namespace AirVinyl.Controllers
                 throw new ArgumentNullException(nameof(airVinylDbContext));
         }
 
+        //[EnableQuery]
+        //public async Task<IActionResult> Get()
+        //{
+        //    return Ok(await _airVinylDbContext.People.ToListAsync());
+        //}
         [EnableQuery]
-        public async Task<IActionResult> Get()
+        public IActionResult Get()
         {
-            return Ok(await _airVinylDbContext.People.ToListAsync());
+            return Ok(_airVinylDbContext.People);
         }
 
         // Convention based routing which mapped to the URL in the form of: People(1)
