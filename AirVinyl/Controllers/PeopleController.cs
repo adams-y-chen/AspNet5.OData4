@@ -104,5 +104,46 @@ namespace AirVinyl.Controllers
 
             return Ok(propertyValue.ToString());
         }
+
+        // Get the VinylRecords collection property.
+        [HttpGet("odata/People({key})/VinylRecords")]
+        public async Task<IActionResult> GetPersonCollectionProperty(int key)
+        {
+            var propertyName = new Uri(HttpContext.Request.GetEncodedUrl())
+                .Segments.Last();
+
+            var person = await _airVinylDbContext.People
+                .Include(propertyName)
+                .FirstOrDefaultAsync(p => p.PersonId == key);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            if (!person.HasProperty(propertyName))
+            {
+                return NotFound();
+            }
+
+            var propertyValue = person.GetValue(propertyName);
+
+            return Ok(propertyValue);
+        }
+
+        // Support creating People with VinylRecourds in the body.
+        [HttpPost("odata/People")]
+        public async Task<IActionResult> CreatePerson([FromBody] Person person)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            _airVinylDbContext.People.Add(person);
+            await _airVinylDbContext.SaveChangesAsync();
+
+            return Created(person); 
+        }
     }
 }
