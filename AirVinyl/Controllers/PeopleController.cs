@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Query;
+using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -29,6 +30,8 @@ namespace AirVinyl.Controllers
         //{
         //    return Ok(await _airVinylDbContext.People.ToListAsync());
         //}
+        //"LINQ defered execution that helps optimize database query."
+        //The select query would only return specifed fields from database.
         [EnableQuery]
         public IActionResult Get()
         {
@@ -36,17 +39,29 @@ namespace AirVinyl.Controllers
         }
 
         // Convention based routing which mapped to the URL in the form of: People(1)
-        [EnableQuery]
-        public async Task<IActionResult> Get(int key)
-        {
-            var person = await _airVinylDbContext.People.FirstOrDefaultAsync(p => p.PersonId == key);
+        //[EnableQuery]
+        //public async Task<IActionResult> Get(int key)
+        //{
+        //    var person = await _airVinylDbContext.People.FirstOrDefaultAsync(p => p.PersonId == key);
 
-            if (person == null)
+        //    if (person == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    return Ok(person);
+        //}
+        [EnableQuery]
+        public IActionResult Get(int key)
+        {
+            var people = _airVinylDbContext.People.Where(p => p.PersonId == key);
+
+            if (!people.Any())
             {
                 return NotFound();
             }
 
-            return Ok(person);
+            return Ok(SingleResult.Create(people));
         }
 
         // Get a property of a person`
