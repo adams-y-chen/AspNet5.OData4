@@ -3,6 +3,7 @@ using AirVinyl.API.Helpers;
 using AirVinyl.Entities;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OData.Deltas;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -144,6 +145,71 @@ namespace AirVinyl.Controllers
             await _airVinylDbContext.SaveChangesAsync();
 
             return Created(person); 
+        }
+
+        [HttpPut("odata/People({key})")]
+        public async Task<IActionResult> UpdatePerson(int key, [FromBody] Person person)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var currentPerson = await _airVinylDbContext.People.FirstOrDefaultAsync(p => p.PersonId == key);
+
+            if (currentPerson == null)
+            {
+                return NotFound();
+            }
+
+            // Note: code shall not assume that person.PersonId is the same as the key.
+            // Set it explictly in case it is different.
+            person.PersonId = currentPerson.PersonId;
+            _airVinylDbContext.Entry(currentPerson).CurrentValues.SetValues(person);
+            await _airVinylDbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpPatch("odata/People({key})")]
+        public async Task<IActionResult> PartiallyUpdatePerson(int key, [FromBody] Delta<Person> patch)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var currentPerson = await _airVinylDbContext.People.FirstOrDefaultAsync(p => p.PersonId == key);
+
+            if (currentPerson == null)
+            {
+                return NotFound();
+            }
+
+            patch.Patch(currentPerson);
+            await _airVinylDbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("odata/People({key})")]
+        public async Task<IActionResult> DeletePerson(int key)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var currentPerson = await _airVinylDbContext.People.FirstOrDefaultAsync(p => p.PersonId == key);
+
+            if (currentPerson == null)
+            {
+                return NotFound();
+            }
+
+            _airVinylDbContext.People.Remove(currentPerson);
+            await _airVinylDbContext.SaveChangesAsync();
+            return NoContent();
         }
     }
 }
