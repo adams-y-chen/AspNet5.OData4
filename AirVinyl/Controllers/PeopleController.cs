@@ -4,6 +4,7 @@ using AirVinyl.Entities;
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Deltas;
+using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -23,12 +24,14 @@ namespace AirVinyl.Controllers
                 throw new ArgumentNullException(nameof(airVinylDbContext));
         }
 
+        [EnableQuery]
         public async Task<IActionResult> Get()
         {
             return Ok(await _airVinylDbContext.People.ToListAsync());
         }
 
         // Convention based routing which mapped to the URL in the form of: People(1)
+        [EnableQuery]
         public async Task<IActionResult> Get(int key)
         {
             var person = await _airVinylDbContext.People.FirstOrDefaultAsync(p => p.PersonId == key);

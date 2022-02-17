@@ -24,12 +24,14 @@ namespace AirVinyl
         {
             services.AddControllers().AddOData(opt =>
                 opt.AddRouteComponents("odata", new AirVinylEntityDataModel().GetEntityDataModel())
+                .Select()
             );
 
             services.AddDbContext<AirVinylDbContext>(options =>
             {
                 options.UseSqlServer(
-                    @"Server=(localdb)\mssqllocaldb;Database=AirVinylDemoDB;Trusted_Connection=True;");
+                    @"Server=(localdb)\mssqllocaldb;Database=AirVinylDemoDB;Trusted_Connection=True;")
+                .EnableSensitiveDataLogging();
             });
         }
 
