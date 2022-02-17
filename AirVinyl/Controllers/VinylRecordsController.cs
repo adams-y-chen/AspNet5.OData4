@@ -28,5 +28,20 @@ namespace AirVinyl.Controllers
         {
             return Ok(await _airVinylDbContext.VinylRecords.ToListAsync());
         }
+
+        // Attribute based routing
+        [HttpGet("VinylRecords({key})")]
+        public async Task<IActionResult> Get(int key)
+        {
+            var vinylRecord = await _airVinylDbContext.VinylRecords
+                .FirstOrDefaultAsync(v => v.VinylRecordId == key);
+
+            if (vinylRecord == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(vinylRecord);
+        }
     }
 }
