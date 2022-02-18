@@ -26,6 +26,7 @@ namespace AirVinyl
                 opt.AddRouteComponents("odata", new AirVinylEntityDataModel().GetEntityDataModel())
                 .Select()
                 .Expand()
+                .OrderBy()
             );
 
             services.AddDbContext<AirVinylDbContext>(options =>
