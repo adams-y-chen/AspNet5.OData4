@@ -32,7 +32,7 @@ namespace AirVinyl.Controllers
         //}
         //"LINQ defered execution that helps optimize database query."
         //The select query would only return specifed fields from database.
-        [EnableQuery]
+        [EnableQuery(PageSize = 4)]
         public IActionResult Get()
         {
             return Ok(_airVinylDbContext.People);
