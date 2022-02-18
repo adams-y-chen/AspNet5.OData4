@@ -29,6 +29,7 @@ namespace AirVinyl
                 .OrderBy()
                 .SetMaxTop(10)
                 .Count()
+                .Filter()
             );
 
             services.AddDbContext<AirVinylDbContext>(options =>
