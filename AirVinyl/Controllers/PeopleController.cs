@@ -129,31 +129,46 @@ namespace AirVinyl.Controllers
             return Ok(propertyValue.ToString());
         }
 
+        //// Get the VinylRecords collection property.
+        //[EnableQuery]
+        //[HttpGet("odata/People({key})/VinylRecords")]
+        //public IActionResult GetPersonCollectionProperty(int key)
+        //{
+        //    var propertyName = new Uri(HttpContext.Request.GetEncodedUrl())
+        //        .Segments.Last();
+
+        //    var person = _airVinylDbContext.People
+        //        .Include(propertyName)
+        //        .FirstOrDefault(p => p.PersonId == key);
+
+        //    if (person == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    if (!person.HasProperty(propertyName))
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var propertyValue = person.GetValue(propertyName);
+
+        //    return Ok(propertyValue);
+        //}
+
         // Get the VinylRecords collection property.
         [EnableQuery]
         [HttpGet("odata/People({key})/VinylRecords")]
         public IActionResult GetPersonCollectionProperty(int key)
         {
-            var propertyName = new Uri(HttpContext.Request.GetEncodedUrl())
-                .Segments.Last();
-
-            var person = _airVinylDbContext.People
-                .Include(propertyName)
-                .FirstOrDefault(p => p.PersonId == key);
+            var person = _airVinylDbContext.People.FirstOrDefault(p => p.PersonId == key);
 
             if (person == null)
             {
                 return NotFound();
             }
 
-            if (!person.HasProperty(propertyName))
-            {
-                return NotFound();
-            }
-
-            var propertyValue = person.GetValue(propertyName);
-
-            return Ok(propertyValue);
+            return Ok(_airVinylDbContext.VinylRecords.Where(v => v.PersonId == key));
         }
 
         // Support creating People with VinylRecourds in the body.
