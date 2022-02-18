@@ -130,15 +130,16 @@ namespace AirVinyl.Controllers
         }
 
         // Get the VinylRecords collection property.
+        [EnableQuery]
         [HttpGet("odata/People({key})/VinylRecords")]
-        public async Task<IActionResult> GetPersonCollectionProperty(int key)
+        public IActionResult GetPersonCollectionProperty(int key)
         {
             var propertyName = new Uri(HttpContext.Request.GetEncodedUrl())
                 .Segments.Last();
 
-            var person = await _airVinylDbContext.People
+            var person = _airVinylDbContext.People
                 .Include(propertyName)
-                .FirstOrDefaultAsync(p => p.PersonId == key);
+                .FirstOrDefault(p => p.PersonId == key);
 
             if (person == null)
             {
