@@ -273,5 +273,95 @@ namespace AirVinyl.Controllers
             await _airVinylDbContext.SaveChangesAsync();
             return NoContent();
         }
+
+        [HttpPost("odata/People({key})/VinylRecords")]
+        public async Task<IActionResult> CreateVinylRecordForPerson(int key,
+            [FromBody] VinylRecord vinylRecord)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // check if person exists
+            var person = await _airVinylDbContext.People
+                .FirstOrDefaultAsync(p => p.PersonId == key);
+            
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            // link person to vinylRecord. (also avoids a invalid PersonId key passed in by the client.)
+            vinylRecord.Person = person;
+
+            _airVinylDbContext.VinylRecords.Add(vinylRecord);
+            await _airVinylDbContext.SaveChangesAsync();
+
+            return Created(vinylRecord);
+        }
+
+        [HttpPatch("odata/People({key})/VinylRecords({vinylRecordKey})")]
+        public async Task<IActionResult> PatchVinylRecordForPerson(int key, int vinylRecordKey,
+            [FromBody] Delta<VinylRecord> patch)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // check if person exists
+            var person = await _airVinylDbContext.People
+                .FirstOrDefaultAsync(p => p.PersonId == key);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            var currentVinylRecord = await _airVinylDbContext.VinylRecords
+                .FirstOrDefaultAsync(v => v.VinylRecordId == vinylRecordKey);
+
+            if (currentVinylRecord == null)
+            {
+                return NotFound();
+            }
+
+            patch.Patch(currentVinylRecord);
+            await _airVinylDbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
+
+        [HttpDelete("odata/People({key})/VinylRecords({vinylRecordKey})")]
+        public async Task<IActionResult> DeleteVinylRecordForPersion(int key, int vinylRecordKey)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // check if person exists
+            var person = await _airVinylDbContext.People
+                .FirstOrDefaultAsync(p => p.PersonId == key);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            var currentVinylRecord = await _airVinylDbContext.VinylRecords
+                .FirstOrDefaultAsync(v => v.VinylRecordId == vinylRecordKey);
+
+            if (currentVinylRecord == null)
+            {
+                return NotFound();
+            }
+
+            _airVinylDbContext.VinylRecords.Remove(currentVinylRecord);
+            await _airVinylDbContext.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
