@@ -1,47 +1,47 @@
-﻿using AirVinyl.API.DbContexts;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.OData.Routing.Controllers;
-using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿//using AirVinyl.API.DbContexts;
+//using Microsoft.AspNetCore.Mvc;
+//using Microsoft.AspNetCore.OData.Routing.Controllers;
+//using Microsoft.EntityFrameworkCore;
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Threading.Tasks;
 
-namespace AirVinyl.Controllers
-{
-    [Route("odata")]
-    public class VinylRecordsController : ODataController
-    {
-        private readonly AirVinylDbContext _airVinylDbContext;
+//namespace AirVinyl.Controllers
+//{
+//    [Route("odata")]
+//    public class VinylRecordsController : ODataController
+//    {
+//        private readonly AirVinylDbContext _airVinylDbContext;
 
-        public VinylRecordsController(AirVinylDbContext airVinylDbContext)
-        {
-            _airVinylDbContext = airVinylDbContext ??
-                throw new ArgumentNullException(nameof(airVinylDbContext));
-        }
+//        public VinylRecordsController(AirVinylDbContext airVinylDbContext)
+//        {
+//            _airVinylDbContext = airVinylDbContext ??
+//                throw new ArgumentNullException(nameof(airVinylDbContext));
+//        }
 
-        [HttpGet("VinylRecords")]
-        // Older version
-        //[HttpGet]
-        //[ODataRoute("VinylRecords")]
-        public async Task<IActionResult> GetAllVinylRecords()
-        {
-            return Ok(await _airVinylDbContext.VinylRecords.ToListAsync());
-        }
+//        [HttpGet("VinylRecords")]
+//        // Older version
+//        //[HttpGet]
+//        //[ODataRoute("VinylRecords")]
+//        public async Task<IActionResult> GetAllVinylRecords()
+//        {
+//            return Ok(await _airVinylDbContext.VinylRecords.ToListAsync());
+//        }
 
-        // Attribute based routing
-        [HttpGet("VinylRecords({key})")]
-        public async Task<IActionResult> Get(int key)
-        {
-            var vinylRecord = await _airVinylDbContext.VinylRecords
-                .FirstOrDefaultAsync(v => v.VinylRecordId == key);
+//        // Attribute based routing
+//        [HttpGet("VinylRecords({key})")]
+//        public async Task<IActionResult> Get(int key)
+//        {
+//            var vinylRecord = await _airVinylDbContext.VinylRecords
+//                .FirstOrDefaultAsync(v => v.VinylRecordId == key);
 
-            if (vinylRecord == null)
-            {
-                return NotFound();
-            }
+//            if (vinylRecord == null)
+//            {
+//                return NotFound();
+//            }
 
-            return Ok(vinylRecord);
-        }
-    }
-}
+//            return Ok(vinylRecord);
+//        }
+//    }
+//}

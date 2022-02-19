@@ -171,6 +171,29 @@ namespace AirVinyl.Controllers
             return Ok(_airVinylDbContext.VinylRecords.Where(v => v.PersonId == key));
         }
 
+        [EnableQuery]
+        [HttpGet("odata/People({key})/VinylRecords({vinylRecordKey})")]
+        public IActionResult GetVinylRecordForPerson(int key, int vinylRecordKey)
+        {
+            var person = _airVinylDbContext.People
+                .FirstOrDefault(p => p.PersonId == key);
+
+            if (person == null)
+            {
+                return NotFound();
+            }
+
+            var vinylRecords = _airVinylDbContext.VinylRecords
+                .Where(v => v.VinylRecordId == vinylRecordKey);
+
+            if (!vinylRecords.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(SingleResult.Create(vinylRecords));
+        }
+
         // Support creating People with VinylRecourds in the body.
         [HttpPost("odata/People")]
         public async Task<IActionResult> CreatePerson([FromBody] Person person)
