@@ -34,6 +34,12 @@ namespace AirVinyl.EntityDataModels
             areRatedByFunction.CollectionParameter<int>("personIds");
             areRatedByFunction.Namespace = "AirVinyl.Functions";
 
+            // unbound function
+            var getHighRatedRecordStoresFunction = builder.Function("GetHighRatedRecordStore");
+            getHighRatedRecordStoresFunction.ReturnsCollectionFromEntitySet<RecordStore>("RecordStores");
+            getHighRatedRecordStoresFunction.Parameter<int>("minimumRating");
+            getHighRatedRecordStoresFunction.Namespace = "AirVinyl.Functions";
+
             return builder.GetEdmModel();
         }
     }

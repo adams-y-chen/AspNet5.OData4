@@ -71,8 +71,8 @@ namespace AirVinyl.Controllers
         {
             var recordStore = await _airVinylDbContext.RecordStores
                 .FirstOrDefaultAsync(p => p.RecordStoreId == key
-                && p.Ratings.Any()
-                && (p.Ratings.Sum(r=>r.Value)/p.Ratings.Count() > minimumRating));
+                    && p.Ratings.Any()
+                    && (p.Ratings.Sum(r=>r.Value)/p.Ratings.Count() > minimumRating));
 
             return (recordStore != null);
 
@@ -83,6 +83,18 @@ namespace AirVinyl.Controllers
         {
             var recordStores = await _airVinylDbContext.RecordStores
                 .Where(p => p.Ratings.Any(r => people.Contains(r.RatedBy.PersonId)))
+                .ToListAsync();
+
+            return Ok(recordStores);
+        }
+
+        [HttpGet("GetHighRatedRecordStores(minimumRating={minimumRating})")]
+        public async Task<IActionResult> GetHighRatedRecordStores(int minimumRating)
+        {
+            var recordStores = await _airVinylDbContext.RecordStores
+                .Where(p => p.Ratings.Any()
+                    && (p.Ratings.Sum(r => r.Value) / p.Ratings.Count() > minimumRating))
+                .Include("Ratings")
                 .ToListAsync();
 
             return Ok(recordStores);
