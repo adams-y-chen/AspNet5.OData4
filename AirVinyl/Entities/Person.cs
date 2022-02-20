@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.OData.ModelBuilder;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
@@ -31,6 +32,7 @@ namespace AirVinyl.Entities
 
         public decimal AmountOfCashToSpend { get; set; }
 
+        [Contained]
         public ICollection<VinylRecord> VinylRecords { get; set; } = new List<VinylRecord>();
     }
 }
