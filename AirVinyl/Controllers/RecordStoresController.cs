@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;
 using Microsoft.AspNetCore.OData.Results;
 using Microsoft.AspNetCore.OData.Routing.Controllers;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -62,6 +63,18 @@ namespace AirVinyl.Controllers
             var propertyValue = recordStore.GetValue(propertyName);
 
             return Ok(propertyValue);
+        }
+
+        [HttpGet("RecordStore({key})/AirVinyl.Functions.IsHighRated(minmumRating={minimumRating})")]
+        public async Task<bool> IsHighRated(int key, int minimumRating)
+        {
+            var recordStore = await _airVinylDbContext.RecordStores
+                .FirstOrDefaultAsync(p => p.RecordStoreId == key
+                && p.Ratings.Any()
+                && (p.Ratings.Sum(r=>r.Value)/p.Ratings.Count() > minimumRating));
+
+            return (recordStore != null);
+
         }
     }
 }
